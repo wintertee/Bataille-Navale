@@ -95,32 +95,71 @@ public class Board implements IBoard {
 
 	@Override
 	public int getSize() {
-		// TODO Auto-generated method stub
-		return 0;
+		return size;
 	}
 
 	@Override
 	public boolean putShip(AbstractShip ship, Coords coords) {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			if (canPutShip(ship, coords)) {
+				Orientation o = ship.getOrientation();
+				int dx = 0, dy = 0;
+				switch (o) {
+					case EAST:
+						dx = 1;
+						break;
+					case SOUTH:
+						dy = 1;
+						break;
+					case NORTH:
+						dy = -1;
+						break;
+					case WEST:
+						dx = -1;
+						break;
+				}
+
+				Coords iCoords = new Coords(coords);
+
+				for (int i = 0; i < ship.getLength(); ++i) {
+					navires[iCoords.getY()][iCoords.getX()] = ship.getLabel();
+					iCoords.setX(iCoords.getX() + dx);
+					iCoords.setY(iCoords.getY() + dy);
+				}
+				return true;
+			} else {
+				return false;
+			}
+		} catch (ArrayIndexOutOfBoundsException exception) {
+			return false;
+		}
 	}
 
 	@Override
 	public boolean hasShip(Coords coords) {
-		// TODO Auto-generated method stub
-		return false;
+		try {
+			return navires[coords.getY()][coords.getX()] != 0;
+		} catch (ArrayIndexOutOfBoundsException exception) {
+			return false;
+		}
 	}
 
 	@Override
 	public void setHit(boolean hit, Coords coords) {
-		// TODO Auto-generated method stub
+		try {
+			frappes[coords.getX()][coords.getY()] = hit;
+		} catch (ArrayIndexOutOfBoundsException exception) {
+		}
 
 	}
 
 	@Override
 	public Boolean getHit(Coords coords) {
-		// TODO Auto-generated method stub
-		return null;
+		try {
+			return frappes[coords.getX()][coords.getY()];
+		} catch (ArrayIndexOutOfBoundsException exception) {
+		}
+		return false;
 	}
 
 	@Override

@@ -9,6 +9,11 @@ public class Coords {
         y = 0;
     }
 
+    public Coords(int x, int y) {
+        this.x = x;
+        this.y = y;
+    }
+
     public Coords(Coords coords) {
         x = coords.getX();
         y = coords.getY();
@@ -25,7 +30,7 @@ public class Coords {
     public void setX(int x) {
         this.x = x;
     }
-    
+
     public void setY(int y) {
         this.y = y;
     }
