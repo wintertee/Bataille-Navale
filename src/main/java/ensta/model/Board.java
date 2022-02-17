@@ -145,7 +145,10 @@ public class Board implements IBoard {
 	@Override
 	public boolean hasShip(Coords coords) {
 		try {
-			return ships[coords.getY()][coords.getX()] != null;
+			if (ships[coords.getY()][coords.getX()] != null)
+				return !ships[coords.getY()][coords.getX()].isSunk();
+			else
+				return false;
 		} catch (ArrayIndexOutOfBoundsException exception) {
 			return false;
 		}
@@ -154,7 +157,7 @@ public class Board implements IBoard {
 	@Override
 	public void setHit(boolean hit, Coords coords) {
 		try {
-			hits[coords.getX()][coords.getY()] = new Boolean(hit);
+			hits[coords.getY()][coords.getX()] = new Boolean(hit);
 		} catch (ArrayIndexOutOfBoundsException exception) {
 		}
 
@@ -163,7 +166,7 @@ public class Board implements IBoard {
 	@Override
 	public Boolean getHit(Coords coords) {
 		try {
-			return hits[coords.getX()][coords.getY()];
+			return hits[coords.getY()][coords.getX()];
 		} catch (ArrayIndexOutOfBoundsException exception) {
 			return false;
 		}
@@ -171,8 +174,16 @@ public class Board implements IBoard {
 
 	@Override
 	public Hit sendHit(Coords res) {
-		// TODO Auto-generated method stub
-		return null;
+		ShipState shipstate = ships[res.getY()][res.getX()];
+		if (shipstate == null)
+			return Hit.MISS;
+		if (shipstate.isSunk())
+			return Hit.MISS;
+		shipstate.addStrike();
+		if (shipstate.isSunk())
+			return Hit.fromInt(shipstate.getShip().getLength());
+		else
+			return Hit.STRIKE;
 	}
 
 }

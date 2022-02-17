@@ -16,9 +16,10 @@ public class ShipState {
     }
 
     public void addStrike() {
-        if (!isStruck())
+        if (!isStruck()) {
             ship.addStrike();
-        else
+            struck = true;
+        } else
             throw new RuntimeException("already struck");
     }
 
