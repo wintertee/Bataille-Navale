@@ -6,16 +6,18 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Scanner;
 
+import ensta.ai.PlayerAI;
 import ensta.model.Board;
 import ensta.model.Coords;
 import ensta.model.Hit;
 import ensta.model.Player;
 import ensta.model.ship.AbstractShip;
-import ensta.model.ship.BattleShip;
+import ensta.model.ship.Battleship;
 import ensta.model.ship.Carrier;
 import ensta.model.ship.Destroyer;
 import ensta.model.ship.Submarine;
 import ensta.util.ColorUtil;
+import ensta.util.Orientation;
 
 public class Game {
 
@@ -29,7 +31,7 @@ public class Game {
 	 */
 	private Player player1;
 	private Player player2;
-	private Scanner sin;
+	// private Scanner sin;
 
 	/*
 	 * *** Constructeurs
@@ -40,12 +42,17 @@ public class Game {
 	public Game init() {
 		if (!loadSave()) {
 
+			// init boards
+			Board board1 = new Board("board1");
+			Board board2 = new Board("board2");
 
-			// TODO init boards
+			// init this.player1 & this.player2
+			player1 = new Player(board1, board2, createDefaultShips());
+			player2 = new PlayerAI(board2, board1, createDefaultShips());
 
-			// TODO init this.player1 & this.player2
-
-			// TODO place player ships
+			// place player ships
+			player1.putShips();
+			player2.putShips();
 		}
 		return this;
 	}
@@ -62,8 +69,10 @@ public class Game {
 		b1.print();
 		boolean done;
 		do {
-			hit = Hit.MISS; // TODO player1 send a hit
-			boolean strike = hit != Hit.MISS; // TODO set this hit on his board (b1)
+			hit = player1.sendHit(coords); // player1 send a hit
+
+			boolean strike = hit != Hit.MISS;
+			b1.setHit(strike, coords);// set this hit on his board (b1)
 
 			done = updateScore();
 			b1.print();
@@ -73,7 +82,7 @@ public class Game {
 
 			if (!done && !strike) {
 				do {
-					hit = Hit.MISS; // TODO player2 send a hit.
+					hit = player2.sendHit(coords); // player2 send a hit.
 
 					strike = hit != Hit.MISS;
 					if (strike) {
@@ -83,7 +92,7 @@ public class Game {
 					done = updateScore();
 
 					if (!done) {
-//						save();
+						// save();
 					}
 				} while (strike && !done);
 			}
@@ -92,33 +101,33 @@ public class Game {
 
 		SAVE_FILE.delete();
 		System.out.println(String.format("joueur %d gagne", player1.isLose() ? 2 : 1));
-		sin.close();
+		// sin.close();
 	}
 
 	private void save() {
-//		try {
-//			// TODO bonus 2 : uncomment
-//			// if (!SAVE_FILE.exists()) {
-//			// SAVE_FILE.getAbsoluteFile().getParentFile().mkdirs();
-//			// }
-//
-//			// TODO bonus 2 : serialize players
-//
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
+		// try {
+		// // TODO bonus 2 : uncomment
+		// // if (!SAVE_FILE.exists()) {
+		// // SAVE_FILE.getAbsoluteFile().getParentFile().mkdirs();
+		// // }
+		//
+		// // TODO bonus 2 : serialize players
+		//
+		// } catch (IOException e) {
+		// e.printStackTrace();
+		// }
 	}
 
 	private boolean loadSave() {
-//		if (SAVE_FILE.exists()) {
-//			try {
-//				// TODO bonus 2 : deserialize players
-//
-//				return true;
-//			} catch (IOException | ClassNotFoundException e) {
-//				e.printStackTrace();
-//			}
-//		}
+		// if (SAVE_FILE.exists()) {
+		// try {
+		// // TODO bonus 2 : deserialize players
+		//
+		// return true;
+		// } catch (IOException | ClassNotFoundException e) {
+		// e.printStackTrace();
+		// }
+		// }
 		return false;
 	}
 
@@ -144,16 +153,16 @@ public class Game {
 		String msg;
 		ColorUtil.Color color = ColorUtil.Color.RESET;
 		switch (hit) {
-		case MISS:
-			msg = hit.toString();
-			break;
-		case STRIKE:
-			msg = hit.toString();
-			color = ColorUtil.Color.RED;
-			break;
-		default:
-			msg = hit.toString() + " coulé";
-			color = ColorUtil.Color.RED;
+			case MISS:
+				msg = hit.toString();
+				break;
+			case STRIKE:
+				msg = hit.toString();
+				color = ColorUtil.Color.RED;
+				break;
+			default:
+				msg = hit.toString() + " coulé";
+				color = ColorUtil.Color.RED;
 		}
 		msg = String.format("%s Frappe en %c%d : %s", incoming ? "<=" : "=>", ((char) ('A' + coords.getX())),
 				(coords.getY() + 1), msg);
@@ -161,7 +170,12 @@ public class Game {
 	}
 
 	private static List<AbstractShip> createDefaultShips() {
-		return Arrays.asList(new AbstractShip[] { new Destroyer(), new Submarine(), new Submarine(), new BattleShip(),
-				new Carrier() });
+		return Arrays.asList(new AbstractShip[] {
+				new Destroyer("Destroyer", Orientation.EAST),
+				new Submarine("Submarine", Orientation.WEST),
+				new Submarine("Submarine2", Orientation.WEST),
+				new Battleship("Battleship", Orientation.NORTH),
+				new Carrier("Battleship", Orientation.SOUTH)
+		});
 	}
 }

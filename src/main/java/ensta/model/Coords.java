@@ -43,7 +43,7 @@ public class Coords {
     }
 
     public boolean isInBoard(int size) {
-        return x < size && y < size;
+        return 0 <= x && x < size && 0 <= y && y < size;
     }
 
     public void setCoords(Coords res) {

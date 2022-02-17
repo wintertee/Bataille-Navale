@@ -59,7 +59,7 @@ public class Player {
 					break;
 			}
 			// put ship at given position
-			boolean placementResult = board.putShip(ship, new Coords(res.x, res.y));
+			boolean placementResult = board.putShip(ship, new Coords(res.x, res.y - 1));
 			// when ship placement successful
 			if (placementResult) {
 				++i;
@@ -81,6 +81,12 @@ public class Player {
 			InputHelper.CoordInput hitInput = InputHelper.readCoordInput();
 			// call sendHit on this.opponentBoard
 			Coords coordsInput = new Coords(hitInput.x, hitInput.y);
+			done = coordsInput.isInBoard(board.getSize());
+			done &= (board.getHit(coordsInput) == null);
+			if (!done) {
+				System.out.println("invalid position. try again");
+				continue;
+			}
 			hit = this.opponentBoard.sendHit(coordsInput);
 
 			// Game expects sendHit to return BOTH hit result & hit coords.
