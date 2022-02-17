@@ -1,22 +1,24 @@
 package ensta.model;
 
 import ensta.model.ship.AbstractShip;
+import ensta.model.ship.ShipState;
+import ensta.util.ColorUtil;
 import ensta.util.Orientation;
 
 public class Board implements IBoard {
 
 	private String name;
 	private int size;
-	private char[][] navires;
-	private boolean[][] frappes;
+	private ShipState[][] ships;
+	private Boolean[][] hits;
 
 	private static final int DEFAULT_SIZE = 10;
 
 	public Board(String name, int size) {
 		this.name = name;
 		this.size = size;
-		navires = new char[size][size];
-		frappes = new boolean[size][size];
+		ships = new ShipState[size][size];
+		hits = new Boolean[size][size];
 	}
 
 	public Board(String nom) {
@@ -33,7 +35,7 @@ public class Board implements IBoard {
 		for (int x = 0; x < size; ++x) {
 			System.out.format("%-3d", x + 1);
 			for (int y = 0; y < size; ++y) {
-				System.out.print((navires[x][y] == 0 ? "." : navires[x][y]) + " ");
+				System.out.print((ships[x][y] == null ? "." : ships[x][y]) + " ");
 			}
 			System.out.println();
 		}
@@ -49,7 +51,12 @@ public class Board implements IBoard {
 		for (int x = 0; x < size; ++x) {
 			System.out.format("%-3d", x + 1);
 			for (int y = 0; y < size; ++y) {
-				System.out.print((frappes[x][y] ? "x" : ".") + " ");
+				if (hits[x][y] == null)
+					System.out.print(". ");
+				else if (hits[x][y] == false)
+					System.out.print(ColorUtil.colorize("x ", ColorUtil.Color.WHITE));
+				else if (hits[x][y] == true)
+					System.out.print(ColorUtil.colorize("x ", ColorUtil.Color.RED));
 			}
 			System.out.println();
 		}
@@ -122,7 +129,7 @@ public class Board implements IBoard {
 				Coords iCoords = new Coords(coords);
 
 				for (int i = 0; i < ship.getLength(); ++i) {
-					navires[iCoords.getY()][iCoords.getX()] = ship.getLabel();
+					ships[iCoords.getY()][iCoords.getX()] = new ShipState(ship);
 					iCoords.setX(iCoords.getX() + dx);
 					iCoords.setY(iCoords.getY() + dy);
 				}
@@ -138,7 +145,7 @@ public class Board implements IBoard {
 	@Override
 	public boolean hasShip(Coords coords) {
 		try {
-			return navires[coords.getY()][coords.getX()] != 0;
+			return ships[coords.getY()][coords.getX()] != null;
 		} catch (ArrayIndexOutOfBoundsException exception) {
 			return false;
 		}
@@ -147,7 +154,7 @@ public class Board implements IBoard {
 	@Override
 	public void setHit(boolean hit, Coords coords) {
 		try {
-			frappes[coords.getX()][coords.getY()] = hit;
+			hits[coords.getX()][coords.getY()] = new Boolean(hit);
 		} catch (ArrayIndexOutOfBoundsException exception) {
 		}
 
@@ -156,10 +163,10 @@ public class Board implements IBoard {
 	@Override
 	public Boolean getHit(Coords coords) {
 		try {
-			return frappes[coords.getX()][coords.getY()];
+			return hits[coords.getX()][coords.getY()];
 		} catch (ArrayIndexOutOfBoundsException exception) {
+			return false;
 		}
-		return false;
 	}
 
 	@Override

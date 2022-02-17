@@ -1,6 +1,7 @@
 package ensta.model.ship;
 
 import ensta.util.Orientation;
+import java.lang.RuntimeException;
 
 public abstract class AbstractShip {
 
@@ -8,6 +9,18 @@ public abstract class AbstractShip {
     private String name;
     private int length;
     private Orientation orientation;
+    private int strikeCount;
+
+    public void addStrike() {
+        if (!isSunk())
+            this.strikeCount += 1;
+        else
+            throw new RuntimeException("Ship is sunk");
+    }
+
+    public boolean isSunk() {
+        return strikeCount >= length;
+    }
 
     public AbstractShip(String name, char label, int length, Orientation orientation) {
         this.name = name;
@@ -16,7 +29,7 @@ public abstract class AbstractShip {
         this.orientation = orientation;
     }
 
-    public char getLabel() {
+    public Character getLabel() {
         return label;
     }
 
