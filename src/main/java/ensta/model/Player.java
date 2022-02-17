@@ -72,7 +72,7 @@ public class Player {
 		} while (!done);
 	}
 
-	public Hit sendHit(Coords[] coords) {
+	public Hit sendHit(Coords coords) {
 		boolean done = false;
 		Hit hit = null;
 
@@ -85,8 +85,7 @@ public class Player {
 
 			// Game expects sendHit to return BOTH hit result & hit coords.
 			// return hit is obvious. But how to return coords at the same time ?
-			coords[0] = coordsInput;
-			// use array parameter to pass coords
+			coords.setCoords(coordsInput);
 		} while (!done);
 
 		return hit;
